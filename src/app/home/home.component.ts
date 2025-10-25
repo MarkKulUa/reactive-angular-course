@@ -7,6 +7,7 @@ import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {CourseDialogComponent} from '../course-dialog/course-dialog.component';
 import {CourseComponent} from "../course/course.component";
 import {CoursesService} from "../services/courses.service";
+import {LoadingService} from "../loading/loading.service";
 
 
 @Component({
@@ -23,7 +24,9 @@ export class HomeComponent implements OnInit {
 
 
   constructor(
-    private coursesService: CoursesService) {
+    private coursesService: CoursesService,
+    private loadingService: LoadingService
+    ) {
 
   }
 
@@ -38,12 +41,14 @@ export class HomeComponent implements OnInit {
         map(courses => courses.sort(sortCoursesBySeqNo))
       );
 
-    this.beginnerCourses$ = courses$
+    const loadCourses$ = this.loadingService.showLoaderUntilCompleted(courses$);
+
+    this.beginnerCourses$ = loadCourses$
       .pipe(
         map(courses => courses.filter(course => course.category == 'BEGINNER').sort(sortCoursesBySeqNo))
       );
 
-    this.advancedCourses$ = courses$
+    this.advancedCourses$ = loadCourses$
       .pipe(
         map(courses => courses.filter(course => course.category == 'ADVANCED').sort(sortCoursesBySeqNo))
       );
