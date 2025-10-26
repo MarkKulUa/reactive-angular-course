@@ -30,5 +30,17 @@ const httpServer = app.listen(9000, () => {
     console.log("HTTP REST API Server running at http://localhost:" + httpServer.address()["port"]);
 });
 
+const shutdown = () => {
+  console.log('Shutting down server...');
+  httpServer.close(() => {
+    console.log('Server closed.');
+    process.exit(0);
+  });
+};
+
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
+process.on('uncaughtException', shutdown);
+
 
 
