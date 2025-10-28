@@ -11,11 +11,19 @@ import {
   concatMap,
   switchMap,
   withLatestFrom,
-  concatAll, shareReplay, catchError
+  concatAll,
+  shareReplay,
+  catchError
 } from 'rxjs/operators';
-import {merge, fromEvent, Observable, concat, throwError} from 'rxjs';
+import {merge, fromEvent, Observable, concat, throwError, combineLatest} from 'rxjs';
 import {Lesson} from '../model/lesson';
+import {CoursesService} from "../services/courses.service";
 
+//Single Data Observable Pattern
+interface CourseData {
+  course: Course;
+  lessons: Lesson[];
+}
 
 @Component({
     selector: 'course',
@@ -25,22 +33,35 @@ import {Lesson} from '../model/lesson';
 })
 export class CourseComponent implements OnInit {
 
-  course: Course;
+  data$: Observable<CourseData>;
 
-  lessons: Lesson[];
-
-  constructor(private route: ActivatedRoute) {
+  constructor(
+    private route: ActivatedRoute,
+    private coursesService: CoursesService
+  ) {
 
 
   }
 
   ngOnInit() {
 
+    const courseId = parseInt(this.route.snapshot.paramMap.get('courseId'));
 
+    const course$ = this.coursesService.loadCourseById(courseId)
+      .pipe(
+        startWith(null)
+      );
+    const lessons$ = this.coursesService.loadAllCourseLessons(courseId)
+      .pipe(
+        startWith([])
+      );
 
+    this.data$ = combineLatest([course$, lessons$])
+      .pipe(
+        map(([course, lessons]) => ({course, lessons})),
+        tap(console.log),
+      );
   }
-
-
 }
 
 
