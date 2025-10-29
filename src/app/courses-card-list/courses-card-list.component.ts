@@ -1,4 +1,4 @@
-import {Component, Input, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, Output} from '@angular/core';
 import {Course} from "../model/course";
 import {
   MatCard,
@@ -30,7 +30,8 @@ import {filter, tap} from 'rxjs/operators';
     MatCardImage
   ],
   templateUrl: './courses-card-list.component.html',
-  styleUrl: './courses-card-list.component.scss'
+  styleUrl: './courses-card-list.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CoursesCardListComponent {
 
